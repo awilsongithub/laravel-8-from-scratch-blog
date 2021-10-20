@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<link rel="stylesheet" href="../css/app.css">
 
 <head>
 
@@ -9,14 +10,13 @@
 </head>
 
 <body>
-	<h1>Posts</h1>
-
-	<ul>
-		<li><a href="/posts/my-first-post">My First Post</a></li>
-		<li><a href="/posts/my-second-post">My Second Post</a></li>
-		<li><a href="/posts/my-third-post">My Third Post</a></li>
-	</ul>
-
+	<div class="container">
+		<?php foreach ($posts as $post) : ?>
+			<h3><?= $post->title ?></h3>
+			<?= $post->body ?>
+	
+		<?php endforeach; ?>
+	</div>
 </body>
 
 </html>
