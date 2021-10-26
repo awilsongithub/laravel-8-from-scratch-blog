@@ -13,34 +13,53 @@ class Post {
 	public $excerpt;
 	public $date;
 	public $body;
+	public $slug;
 
-	public function __construct($title, $excerpt, $date, $body) {
+	public function __construct($title, $excerpt, $date, $body, $slug) {
 		$this->title = $title;
 		$this->excerpt = $excerpt;
 		$this->date = $date;
 		$this->body = $body;
+		$this->slug = $slug;
 	}
 
-	static function find($slug) {
-		$path = resource_path("posts/{$slug}.html");
+	public static function all() {
 
-		if (!file_exists($path)) {
-			throw new ModelNotFoundException();
-		}
-		return cache()->remember("post.{$slug}", 1200, function () use ($path) {
-			return file_get_contents($path);
+		return cache()->remember('posts.all', 3600, function () {
+			return collect(File::files(resource_path("posts/")))
+				->map(function ($file) {
+					return YamlFrontMatter::parseFile($file);
+				})
+				->map(function ($document) {
+					return new Post(
+						$document->title,
+						$document->excerpt,
+						$document->date,
+						$document->body(),
+						$document->slug
+					);
+				})
+				->sortByDesc('date');
 		});
 	}
 
-	static function all() {
-		$files = File::files(resource_path("posts/"));
+	public static function find($slug) {
+		return cache()->remember(
+			$slug,
+			3600,
+			function () use ($slug) {
+				$posts = static::all();
+				return $posts->firstWhere('slug', $slug);
+			}
+		);
+	}
 
-		$postObjects =  array_map(function ($file) {
-			$o = YamlFrontMatter::parse($file->getContents());
-			return new Post($o->title, $o->excerpt, $o->date, $o->body());
-		}, $files);
-		// ddd($postObjects);
+	public static function findOrFail($slug) {
+		$post = static::find($slug);
 
-		return $postObjects;
+		if (!$post) {
+			throw new ModelNotFoundException();
+		}
+		return $post;
 	}
 }

@@ -1,22 +1,15 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-<link rel="stylesheet" href="../css/app.css">
-
-<head>
-
-	<title>Laravel</title>
-	<script src="/test.js"></script>
-
-</head>
-
-<body>
-	<div class="container">
-		<?php foreach ($posts as $post) : ?>
-			<h3><?= $post->title ?></h3>
-			<?= $post->body ?>
-	
-		<?php endforeach; ?>
-	</div>
-</body>
-
-</html>
+<x-layout>
+    <div class="row">
+        @foreach ($posts as $post)
+            <div class="col-12 col-md-4">
+                <h3>
+                    <a href="/posts/{{ $post->slug }}">
+                        {{ $post->title }}
+                    </a>
+                </h3>
+                {{-- escape the parser and let through as is --}}
+                {!! $post->body !!}
+            </div>
+        @endforeach
+    </div>
+</x-layout>
