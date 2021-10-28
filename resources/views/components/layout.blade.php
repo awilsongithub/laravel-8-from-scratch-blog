@@ -11,7 +11,6 @@
 
 <body>
     <div class="container">
-        <h1 class="my-4">This Is My App</h1>
         {{ $slot }}
     </div>
 </body>
