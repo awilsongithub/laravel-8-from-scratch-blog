@@ -1,15 +1,17 @@
 <?php
 
 use App\Models\Post;
+use App\Models\User;
 use App\Models\Category;
 use Illuminate\Support\Facades\Route;
-use Spatie\YamlFrontMatter\YamlFrontMatter;
 
 Route::get('/', function () {
+	$ordered_posts = Post::latest('created_at')->get();
+
 	return view('posts', [
-		// eager load post category and user objects using "with"
-		'posts' => Post::with(['category', 'user'])->get(),
-		'category' => null
+		'posts' => $ordered_posts,
+		'category' => null,
+		'author' => null
 	]);
 });
 
@@ -17,6 +19,14 @@ Route::get('categories/{category:slug}', function (Category $category) {
 	return view('posts', [
 		'posts' => $category->posts,
 		'category' => $category
+	]);
+});
+
+Route::get('authors/{author:username}', function (User $author) {
+	return view('posts', [
+		'posts' => $author->posts,
+		'author' => $author,
+		'category' => null
 	]);
 });
 

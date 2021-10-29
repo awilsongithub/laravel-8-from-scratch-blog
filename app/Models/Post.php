@@ -8,14 +8,15 @@ use Illuminate\Database\Eloquent\Model;
 class Post extends Model {
 	use HasFactory;
 
-	protected $guarded = []; // can only mass assign fields we are in charge of, not id, created_at etc....
+	protected $guarded = []; // can only mass assign fields we are in charge of, not id etc.
 
-	// magic allows us to call this as a post property
+	protected $with = ['category', 'author']; // always include these objects
+
 	public function category() {
 		return $this->belongsTo(Category::class);
 	}
 
-	public function user() {
-		return $this->belongsTo(User::class);
+	public function author() {
+		return $this->belongsTo(User::class, 'user_id');
 	}
 }
